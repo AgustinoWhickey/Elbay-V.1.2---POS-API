@@ -1,0 +1,34 @@
+/* Album */
+#gallery, #photo{
+	width: 845px;
+	padding: 10px;
+	margin: 10px auto;
+}
+
+.item{
+	width: 100px;
+	height: 150px;
+	margin: 10px;
+	overflow: hidden;
+	position: relative;
+	float: left;
+	padding: 10px;
+}
+
+.item .caption{
+	bottom: 0;
+	color: #fff;
+	background-color: silver;
+	position: absolute;
+	left: 0;
+	display: none;
+	width: 110px;
+	height: 25px;
+	padding-left: 10px;
+	border-radius: 5px;
+}
+
+.item img{
+	border: 0;
+	position: absolute; 
+}
