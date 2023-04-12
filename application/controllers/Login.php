@@ -12,26 +12,17 @@ class Login extends RestController
         $this->load->model("login_model");
     }
 
-    // public function index()
-    // {
-	// 	if(isset($_SESSION['logged_in'])){
-	// 		redirect('home');
-	// 	} else {
-	// 		$this->load->view("login");
-	// 	}
-    // }
-
     public function index_post()
 	{
-		$aksi = $this->login_model->ceklogin($_POST['email']);
-        if(password_verify($_POST['password'],$aksi[0]["password"])){
+		$aksi = $this->login_model->ceklogin($this->post('email'));
+        if(password_verify( $this->post('password'),$aksi[0]["password"])){
 			$data = [
 				'id' => $aksi[0]['id'],
 				'email' => $aksi[0]['email'],
 				'role' => $aksi[0]['role_id'],
 				'logged_in' => TRUE
 			];
-			$this->session->set_userdata($data);
+			$this->session->userdata = $data;
 			$this->response( [
                 'status' => true,
                 'data' => $data
@@ -44,10 +35,20 @@ class Login extends RestController
 		}
     }
 
-    public function logout()
-    {
-        unset($_SESSION);
-		$this->session->sess_destroy();
-		redirect('login');	
-    }
+    public function index_get()
+	{
+        $ci = get_instance();
+		if(!$ci->session->userdata('email')){
+			$this->response( [
+                'status' => true,
+                'data' => 'Logged In'
+            ], RestController::HTTP_OK );
+		} else{
+			$this->response( [
+                'status' => false,
+                'message' => 'Logged Out'
+            ], RestController::HTTP_NOT_FOUND );
+		}
+	
+	}
 }
