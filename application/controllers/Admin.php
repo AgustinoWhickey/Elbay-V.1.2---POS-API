@@ -15,8 +15,6 @@ class Admin extends RestController
 
     public function index_get()
 	{
-        $ci = get_instance();
-
         $status = $this->get('status');
         $detail['sales'] = $this->admin_model->detailSales($status);
         $detail['user'] = $this->login_model->ceklogin($this->get('email'));

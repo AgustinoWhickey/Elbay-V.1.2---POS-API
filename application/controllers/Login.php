@@ -22,7 +22,6 @@ class Login extends RestController
 				'role' => $aksi[0]['role_id'],
 				'logged_in' => TRUE
 			];
-			$this->session->userdata = $data;
 			$this->response( [
                 'status' => true,
                 'data' => $data
@@ -37,16 +36,16 @@ class Login extends RestController
 
     public function index_get()
 	{
-        $ci = get_instance();
-		if(!$ci->session->userdata('email')){
+        $aksi = $this->login_model->ceklogin($this->get('email'));
+		if($aksi){
 			$this->response( [
                 'status' => true,
-                'data' => 'Logged In'
+                'data' => $aksi
             ], RestController::HTTP_OK );
 		} else{
 			$this->response( [
                 'status' => false,
-                'message' => 'Logged Out'
+                'message' => 'Data Not Found!'
             ], RestController::HTTP_NOT_FOUND );
 		}
 	
