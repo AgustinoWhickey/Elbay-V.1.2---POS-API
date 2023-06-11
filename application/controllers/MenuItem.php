@@ -4,7 +4,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 use chriskacerguis\RestServer\RestController;
 
-class Item extends RestController
+class MenuItem extends RestController
 {
     public function __construct()
     {
@@ -44,18 +44,14 @@ class Item extends RestController
 
     public function index_post()
 	{
-        if($this->post('nama') != ''){
+        if($this->post('product_id') != ''){
 			$data = [
-				'barcode' => $this->post('barcode',true),
-				'name' => $this->post('nama',true),
-				'category_id' => (int)$this->post('kategori',true),
-				'unit_id' => null,
-				'price' => (int)$this->post('harga',true),
-				'stock' => (int)$this->post('stock'),
-				'image' => $this->post('image'),
+				'product_id' => $this->post('product_id'),
+				'item_id' => $this->post('item_id'),
+				'qty' => $this->post('qty'),
 				'created' => time()
 			];
-            $result = $this->product_item_model->insertitem($data);
+            $result = $this->item_menu_model->insertmenuitem($data);
 			$this->response( [
                 'status' => true,
                 'data' => $result

@@ -62,11 +62,7 @@ class Product_Item_model extends CI_Model
     public function insertitem($data)
     {
         $aksi = $this->db->insert('product_item', $data);
-		if ($aksi) {
-			echo 1;
-		} else {
-			echo 0;
-		}
+		return $this->db->insert_id();
     }
 
     public function deleteItem($id)
