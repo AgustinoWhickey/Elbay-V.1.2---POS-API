@@ -21,6 +21,15 @@ class Item_model extends CI_Model
 		return $this->db->affected_rows();
     }
 
+    public function getMenuItems($idproduct) 
+    {
+        $this->db->select('item.name, item.id as item_id, menu_item.qty, menu_item.id, menu_item.product_id');
+        $this->db->where('menu_item.product_id', $idproduct);
+        $this->db->join('item', 'menu_item.item_id = item.id');
+        $aksi = $this->db->get('menu_item')->result();
+        return $aksi;
+    }
+
     public function getItem($iditem)
     {
         $this->db->select('*');

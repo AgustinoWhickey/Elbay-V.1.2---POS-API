@@ -20,7 +20,7 @@ class Item extends RestController
 	{
         $id = $this->get('id');
 		if($id != null){
-			$data['oneitem'] 		= $this->item_model->getItem($id);
+			$data['oneitem'] 		= $this->product_item_model->getItem($id);
 			$data['onemenuitem'] 	= $this->item_menu_model->getMenuItem($id);
 		}
 		$data['unititems'] 	= $this->item_model->getItems();
@@ -77,7 +77,7 @@ class Item extends RestController
                 'message' => 'Provide an id!'
             ], RestController::HTTP_BAD_REQUEST );
 		} else {
-			if($this->category_model->deleteCategory($id)){
+			if($this->product_item_model->deleteItem($id)){
 				$this->response( [
 	                'status' => true,
 	                'id' => $id,
@@ -95,19 +95,25 @@ class Item extends RestController
     public function index_put()
 	{
 		$data = [
-            'id' => $this->put('category_id'),
-            'nama' => htmlspecialchars($this->put('nama',true)),
-            'updated' => time()
-        ];
+			'id' => $this->put('id',true),
+			'barcode' => $this->put('barcode',true),
+			'name' => $this->put('nama',true),
+			'category_id' => (int)$this->put('kategori',true),
+			'unit_id' => null,
+			'price' => (int)$this->put('harga',true),
+			'stock' => (int)$this->put('stock'),
+			'image' => $this->put('image'),
+			'updated' => time()
+		];
 
-    	if($this->category_model->updatecategory($data)){
+    	if($this->product_item_model->updateitem($data)){
     		$this->response( [
                 'status' => true,
                 'message' => 'Data has been updated!'
             ], RestController::HTTP_OK );
         } else {
         	$this->response( [
-                'status' => true,
+                'status' => false,
                 'message' => 'Update Failed!'
             ], RestController::HTTP_NOT_FOUND );
         }

@@ -20,13 +20,8 @@ class MenuItem extends RestController
 	{
         $id = $this->get('id');
 		if($id != null){
-			$data['oneitem'] 		= $this->item_model->getItem($id);
-			$data['onemenuitem'] 	= $this->item_menu_model->getMenuItem($id);
+			$data['items'] = $this->item_model->getMenuItems($id);
 		}
-		$data['unititems'] 	= $this->item_model->getItems();
-		$data['user'] 		= $this->login_model->ceklogin($this->get('email'));
-		$data['items'] 		= $this->product_item_model->getItems();
-		$data['category'] 	= $this->category_model->getCategories();
 
 		if($data){
 			$this->response( [
@@ -73,7 +68,7 @@ class MenuItem extends RestController
                 'message' => 'Provide an id!'
             ], RestController::HTTP_BAD_REQUEST );
 		} else {
-			if($this->category_model->deleteCategory($id)){
+			if($this->item_menu_model->deleteMenuItem($id)){
 				$this->response( [
 	                'status' => true,
 	                'id' => $id,
