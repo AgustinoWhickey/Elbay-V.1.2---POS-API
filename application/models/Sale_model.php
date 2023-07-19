@@ -17,96 +17,6 @@ class Sale_model extends CI_Model
         return $invoice;
     }
 
-    public function getCart($params = null){
-        $this->db->select('cart.*, product_item.barcode, product_item.name as item_name, cart.price as cart_price');
-        $this->db->from('cart');
-        $this->db->join('product_item', 'cart.item_id = product_item.id');
-        if($params != null){
-            $this->db->where($params);
-        }
-        $this->db->where('user_id', $this->session->userdata('user_id'));
-        $query = $this->db->get();
-        return $query;
-    }
-
-    public function addCart($data)
-    {
-        $query = $this->db->query("SELECT MAX(id) AS cart_no FROM cart");
-        if($query->num_rows() > 0){
-            $row = $query->row();
-            $cart_no = ((int)$row->cart_no) + 1;
-        } else {
-            $cart_no = "1";
-        }
-
-        $params = [
-			'id' => $cart_no,
-			'item_id' => (int)$data['item_id'],
-			'price' => $data['price'],
-			'qty' => $data['qty'],
-			'total' => ($data['qty'] * $data['price']),
-			'user_id' => $this->session->userdata('user_id'),
-			'created' => time()
-		];
-
-        $aksi = $this->db->insert('cart', $params); 
-        if ($aksi) {
-			echo 1;
-		} else {
-			echo 0;
-		}
-    }
-
-    public function deleteCart($id)
-    {
-		$aksi = $this->db->where('id', $id)->delete('cart');
-		if ($aksi) {
-			echo 1;
-		} else {
-			echo 0;
-		}
-    }
-
-    public function deleteCartbyUser()
-    {
-		$aksi = $this->db->where('user_id', $this->session->userdata('user_id'))->delete('cart');
-		if ($aksi) {
-			return 1;
-		} else {
-			return 0;
-		}
-    }
-
-    function updateCartQty($data){
-        $sql = "UPDATE cart SET price = '$data[price]', qty = qty + '$data[qty]', total = '$data[price]' * qty WHERE item_id = '$data[item_id]'";
-        $aksi = $this->db->query($sql);
-        if ($aksi) {
-			echo 1;
-		} else {
-			echo 0;
-		}
-    }
-
-    public function updatecart($data)
-	{
-        $id = $data['id'];
-        $qty = $data['qty'];
-        $total = $data['total'];
-        $discount = $data['discount'];
-        $updated = $data['updated'];
-
-        $sql = "UPDATE cart SET qty = '$qty', discount_item = '$discount', total = '$total', updated = '$updated' WHERE id = '$id'";
-
-        $aksi = $this->db->query($sql);
-
-		if ($aksi) {
-			echo 1;
-		} else {
-			echo 0;
-		}
-	
-	}
-
     public function add_sale($data)
     {
         $params = array(
@@ -117,27 +27,32 @@ class Sale_model extends CI_Model
             'cash' => $data['cash'],
             'remaining' => $data['change'],
             'note' => $data['note'],
-            'user_id' => $this->session->userdata('user_id'),
+            'user_id' => $data['user_id'],
             'date' => time(),
             'created' => time(),
         );
 
         $aksi = $this->db->insert('sale', $params); 
-        if ($aksi) {
-			return $this->db->insert_id();
-		} else {
-			echo 0;
-		}
+        
+		return $this->db->insert_id();
+		
     }
 
     public function add_sale_detail($data)
     {
-        $aksi = $this->db->insert_batch('sale_detail', $data);
-        if ($aksi) {
-			return 1;
-		} else {
-			return 0;
-		}
+        $cartDetail = [
+            'sale_id' => $data['sale_id'],
+            'item_id' => $data['item_id'],
+            'price' => $data['price'],
+            'qty' => $data['qty'],
+            'discount_item' => $data['discount_item'],
+            'total' => $data['total'],
+            'user_id' => $data['user_id'],
+            'created' => time()
+        ];
+
+        $aksi = $this->db->insert('sale_detail', $data);
+        return $this->db->insert_id();
     }
 
     // start datatables

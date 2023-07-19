@@ -4,7 +4,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 use chriskacerguis\RestServer\RestController;
 
-class Item extends RestController
+class Cart extends RestController
 {
     public function __construct()
     {
@@ -14,16 +14,17 @@ class Item extends RestController
 		$this->load->model('item_menu_model');
 		$this->load->model('login_model');
 		$this->load->model('category_model');
+		$this->load->model('sale_model');
+		$this->load->model('cart_model');
     }
 
     public function index_get()
 	{
-        $id = $this->get('id');
+		$id = $this->get('id');
 		if($id != null){
-			$data['oneitem'] 		= $this->product_item_model->getItem($id);
-			$data['onemenuitem'] 	= $this->item_menu_model->getMenuItem($id);
+			$data['cart'] 	= $this->cart_model->getCart($id);
 		}
-		$data['unititems'] 	= $this->item_model->getItems();
+		$data['invoice'] 	= $this->sale_model->getInvoice();
 		$data['user'] 		= $this->login_model->ceklogin($this->get('email'));
 		$data['items'] 		= $this->product_item_model->getItems();
 		$data['category'] 	= $this->category_model->getCategories();
@@ -44,18 +45,15 @@ class Item extends RestController
 
     public function index_post()
 	{
-        if($this->post('nama') != ''){
+		if($this->post('item_id') != null) {
 			$data = [
-				'barcode' => $this->post('barcode',true),
-				'name' => $this->post('nama',true),
-				'category_id' => (int)$this->post('kategori',true),
-				'unit_id' => null,
-				'price' => (int)$this->post('harga',true),
-				'stock' => (int)$this->post('stock'),
-				'image' => $this->post('image'),
-				'created' => time()
+				'item_id' => $this->post('item_id',true),
+				'price' => $this->post('price',true),
+				'qty' => $this->post('qty',true),
+				'user_id' => $this->post('user_id',true),
 			];
-            $result = $this->product_item_model->insertitem($data);
+
+			$result = $this->cart_model->addCart($data);
 			$this->response( [
                 'status' => true,
                 'data' => $result
@@ -77,7 +75,7 @@ class Item extends RestController
                 'message' => 'Provide an id!'
             ], RestController::HTTP_BAD_REQUEST );
 		} else {
-			if($this->product_item_model->deleteItem($id)){
+			if($this->cart_model->deleteCartbyUser($id)){
 				$this->response( [
 	                'status' => true,
 	                'id' => $id,
@@ -94,39 +92,24 @@ class Item extends RestController
 
     public function index_put()
 	{
-		if($this->put('item_id') == null){
-			$data = [
-				'id' => $this->put('id',true),
-				'barcode' => $this->put('barcode',true),
-				'name' => $this->put('nama',true),
-				'category_id' => (int)$this->put('kategori',true),
-				'unit_id' => null,
-				'price' => (int)$this->put('harga',true),
-				'stock' => (int)$this->put('stock'),
-				'image' => $this->put('image'),
-				'updated' => time()
-			];
+		$data = [
+			'id' => $this->put('id',true),
+			'barcode' => $this->put('barcode',true),
+			'name' => $this->put('nama',true),
+			'category_id' => (int)$this->put('kategori',true),
+			'unit_id' => null,
+			'price' => (int)$this->put('harga',true),
+			'stock' => (int)$this->put('stock'),
+			'image' => $this->put('image'),
+			'updated' => time()
+		];
 
-			if($this->product_item_model->updateitem($data)){
-				$this->response( [
-					'status' => true,
-					'message' => 'Data has been updated!'
-				], RestController::HTTP_OK );
-			} 
-		} else if($this->put('item_id') != null) {
-			$data = [
-				'item_id' => $this->put('item_id',true),
-				'qty' => $this->put('qty',true),
-				'updated' => time()
-			];
-
-			if($this->product_item_model->updatestockout($data)){
-				$this->response( [
-					'status' => true,
-					'message' => 'Data has been updated!'
-				], RestController::HTTP_OK );
-			} 
-		} else {
+    	if($this->product_item_model->updateitem($data)){
+    		$this->response( [
+                'status' => true,
+                'message' => 'Data has been updated!'
+            ], RestController::HTTP_OK );
+        } else {
         	$this->response( [
                 'status' => false,
                 'message' => 'Update Failed!'

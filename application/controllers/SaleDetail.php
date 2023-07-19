@@ -4,7 +4,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 use chriskacerguis\RestServer\RestController;
 
-class Sale extends RestController
+class SaleDetail extends RestController
 {
     public function __construct()
     {
@@ -22,13 +22,8 @@ class Sale extends RestController
 	{
 		$id = $this->get('id');
 		if($id != null){
-			$data['sale'] 	= $this->sale_model->getSale($id)->row();
-			$data['cart'] 	= $this->cart_model->getCart($id);
+			$data['saledetail'] 	= $this->sale_model->get_sale_detail($id)->result();
 		}
-		$data['invoice'] 	= $this->sale_model->getInvoice();
-		$data['user'] 		= $this->login_model->ceklogin($this->get('email'));
-		$data['items'] 		= $this->product_item_model->getItems();
-		$data['category'] 	= $this->category_model->getCategories();
 
 		if($data){
 			$this->response( [
@@ -46,17 +41,18 @@ class Sale extends RestController
 
     public function index_post()
 	{
-		if ($this->post('cash') != null) {
+		if ($this->post('sale_id') != null) {
 			$data = [
-				'discount' => $this->post('discount'),
-				'grandtotal' => $this->post('grandtotal',true),
-				'cash' => $this->post('cash',true),
-				'change' => $this->post('change',true),
-				'note' => $this->post('note',true),
+				'sale_id' => $this->post('sale_id'),
+				'item_id' => $this->post('item_id',true),
+				'price' => $this->post('price',true),
+				'qty' => $this->post('qty',true),
+				'discount_item' => $this->post('discount_item',true),
+				'total' => $this->post('total',true),
 				'user_id' => $this->post('user_id',true),
 			];
 
-			$result = $this->sale_model->add_sale($data);
+			$result = $this->sale_model->add_sale_detail($data);
 			$this->response( [
                 'status' => true,
                 'data' => $result
