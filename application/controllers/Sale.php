@@ -2,6 +2,8 @@
 
 defined('BASEPATH') OR exit('No direct script access allowed');
 
+require APPPATH . 'libraries/RestController.php';
+require APPPATH . 'libraries/Format.php';
 use chriskacerguis\RestServer\RestController;
 
 class Sale extends RestController
@@ -26,6 +28,7 @@ class Sale extends RestController
 			$data['cart'] 	= $this->cart_model->getCart($id);
 		}
 		$data['invoice'] 	= $this->sale_model->getInvoice();
+		$data['sales'] 		= $this->sale_model->getSale()->result();
 		$data['user'] 		= $this->login_model->ceklogin($this->get('email'));
 		$data['items'] 		= $this->product_item_model->getItems();
 		$data['category'] 	= $this->category_model->getCategories();
