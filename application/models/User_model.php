@@ -5,6 +5,7 @@ class User_model extends CI_Model
     public function getUsers()
     {
 		$this->db->where('role_id !=', 1);
+        $this->db->join('user_role','user_role.id = user.role_id');
         return $this->db->get('user')->result();
     }
 

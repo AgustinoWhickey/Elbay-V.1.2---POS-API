@@ -18,10 +18,11 @@ class Admin extends RestController
     public function index_get()
 	{
         $status = $this->get('status');
+        
         $detail['sales'] = $this->admin_model->detailSales($status);
         $detail['user'] = $this->login_model->ceklogin($this->get('email'));
 
-		if($detail){
+		if($status){
 			$this->response( [
                 'status' => true,
                 'data' => $detail
